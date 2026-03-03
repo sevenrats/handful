@@ -119,6 +119,7 @@ func newUpFlagSet(goos string, upArgs *upArgsT, cmd string) *flag.FlagSet {
 	upf.BoolVar(&upArgs.advertiseConnector, "advertise-connector", false, "advertise this node as an app connector")
 	upf.BoolVar(&upArgs.advertiseDefaultRoute, "advertise-exit-node", false, "offer to be an exit node for internet traffic for the tailnet")
 	upf.BoolVar(&upArgs.postureChecking, "report-posture", false, hidden+"allow management plane to gather device posture information")
+	upf.BoolVar(&upArgs.srvDiscovery, "srv-discovery", false, "discover control server endpoints via DNS SRV records")
 
 	if safesocket.GOOSUsesPeerCreds(goos) {
 		upf.StringVar(&upArgs.opUser, "operator", "", "Unix username to allow to operate on tailscaled without sudo")
@@ -206,6 +207,7 @@ type upArgsT struct {
 	acceptedRisks          string
 	profileName            string
 	postureChecking        bool
+	srvDiscovery           bool
 }
 
 // resolveValueFromFile returns the value as-is, or if it starts with "file:",
@@ -355,6 +357,7 @@ func prefsFromUpArgs(upArgs upArgsT, warnf logger.Logf, st *ipnstate.Status, goo
 	prefs.ProfileName = upArgs.profileName
 	prefs.AppConnector.Advertise = upArgs.advertiseConnector
 	prefs.PostureChecking = upArgs.postureChecking
+	prefs.SRVDiscovery = upArgs.srvDiscovery
 
 	if goos == "linux" {
 		prefs.NoSNAT = !upArgs.snat
@@ -906,6 +909,7 @@ func init() {
 	addPrefFlagMapping("auto-update", "AutoUpdate.Apply")
 	addPrefFlagMapping("advertise-connector", "AppConnector")
 	addPrefFlagMapping("report-posture", "PostureChecking")
+	addPrefFlagMapping("srv-discovery", "SRVDiscovery")
 	addPrefFlagMapping("relay-server-port", "RelayServerPort")
 	addPrefFlagMapping("sync", "Sync")
 	addPrefFlagMapping("relay-server-static-endpoints", "RelayServerStaticEndpoints")
@@ -1190,6 +1194,8 @@ func prefsToFlags(env upCheckEnv, prefs *ipn.Prefs) (flagVal map[string]any) {
 			set(prefs.ForceDaemon)
 		case "report-posture":
 			set(prefs.PostureChecking)
+		case "srv-discovery":
+			set(prefs.SRVDiscovery)
 		}
 	})
 	return ret

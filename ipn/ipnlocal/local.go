@@ -1893,6 +1893,11 @@ var preferencePolicies = []preferencePolicyInfo{
 		get: func(p ipn.PrefsView) bool { return p.AdvertisesExitNode() },
 		set: func(p *ipn.Prefs, v bool) { p.SetAdvertiseExitNode(v) },
 	},
+	{
+		key: pkey.SRVDiscovery,
+		get: func(p ipn.PrefsView) bool { return p.SRVDiscovery() },
+		set: func(p *ipn.Prefs, v bool) { p.SRVDiscovery = v },
+	},
 }
 
 // applySysPolicyLocked overwrites configured preferences with policies that may be
@@ -2632,6 +2637,7 @@ func (b *LocalBackend) startLocked(opts ipn.Options) error {
 		C2NHandler:           c2nHandler,
 		DialPlan:             &b.dialPlan, // pointer because it can't be copied
 		ControlKnobs:         b.sys.ControlKnobs(),
+		SRVDiscovery:         prefs.SRVDiscovery(),
 		Shutdown:             ccShutdown,
 		Bus:                  b.sys.Bus.Get(),
 		StartPaused:          prefs.Sync().EqualBool(false),

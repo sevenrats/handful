@@ -425,6 +425,12 @@ func (v PrefsView) AppConnector() AppConnectorPrefs { return v.ж.AppConnector }
 // pref name that doesn't match the public interface)
 func (v PrefsView) PostureChecking() bool { return v.ж.PostureChecking }
 
+// SRVDiscovery enables DNS SRV record based discovery of control
+// server endpoints. When enabled, the client will look up
+// _ts2021._tcp.<controlhost> SRV records to find additional connection
+// candidates for the control server.
+func (v PrefsView) SRVDiscovery() bool { return v.ж.SRVDiscovery }
+
 // NetfilterKind specifies what netfilter implementation to use.
 //
 // It can be "iptables", "nftables", or "" to auto-detect.
@@ -502,6 +508,7 @@ var _PrefsViewNeedsRegeneration = Prefs(struct {
 	AutoUpdate                 AutoUpdatePrefs
 	AppConnector               AppConnectorPrefs
 	PostureChecking            bool
+	SRVDiscovery               bool
 	NetfilterKind              string
 	DriveShares                []*drive.Share
 	RelayServerPort            *uint16

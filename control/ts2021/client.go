@@ -90,6 +90,10 @@ type ClientOpts struct {
 	// on how to connect to the server.
 	DialPlan func() *tailcfg.ControlDialPlan
 
+	// SRVDiscovery enables DNS SRV record based discovery of control
+	// server endpoints.
+	SRVDiscovery bool
+
 	// ProtocolVersion, if non-zero, specifies an alternate
 	// protocol version to use instead of the default,
 	// of [tailcfg.CurrentCapabilityVersion].
@@ -240,19 +244,20 @@ func (nc *Client) dial(ctx context.Context) (*Conn, error) {
 	defer cancel()
 
 	chd := &controlhttp.Dialer{
-		Hostname:        nc.host,
-		HTTPPort:        nc.httpPort,
-		HTTPSPort:       cmp.Or(nc.httpsPort, controlhttp.NoPort),
-		MachineKey:      nc.opts.PrivKey,
-		ControlKey:      nc.opts.ServerPubKey,
-		ProtocolVersion: cmp.Or(nc.opts.ProtocolVersion, uint16(tailcfg.CurrentCapabilityVersion)),
-		Dialer:          nc.opts.Dialer.SystemDial,
-		DNSCache:        nc.opts.DNSCache,
-		DialPlan:        dialPlan,
-		Logf:            nc.logf,
-		NetMon:          nc.opts.NetMon,
-		HealthTracker:   nc.opts.HealthTracker,
-		Clock:           tstime.StdClock{},
+		Hostname:         nc.host,
+		HTTPPort:         nc.httpPort,
+		HTTPSPort:        cmp.Or(nc.httpsPort, controlhttp.NoPort),
+		MachineKey:       nc.opts.PrivKey,
+		ControlKey:       nc.opts.ServerPubKey,
+		ProtocolVersion:  cmp.Or(nc.opts.ProtocolVersion, uint16(tailcfg.CurrentCapabilityVersion)),
+		Dialer:           nc.opts.Dialer.SystemDial,
+		DNSCache:         nc.opts.DNSCache,
+		DialPlan:         dialPlan,
+		SRVDiscovery:     nc.opts.SRVDiscovery,
+		Logf:             nc.logf,
+		NetMon:           nc.opts.NetMon,
+		HealthTracker:    nc.opts.HealthTracker,
+		Clock:            tstime.StdClock{},
 	}
 	clientConn, err := chd.Dial(ctx)
 	if err != nil {

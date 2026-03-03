@@ -33,6 +33,7 @@ import (
 	"net/netip"
 	"net/url"
 	"runtime"
+	"strconv"
 	"sync/atomic"
 	"time"
 
@@ -99,13 +100,28 @@ func (a *Dialer) dial(ctx context.Context) (*ClientConn, error) {
 
 	a.logPort80Failure.Store(true)
 
-	// If we don't have a dial plan, just fall back to dialing the single
-	// host we know about.
+	// Collect candidates from the server-pushed DialPlan and, optionally,
+	// from DNS SRV records.
 	useDialPlan := envknob.BoolDefaultTrue("TS_USE_CONTROL_DIAL_PLAN")
-	if !useDialPlan || a.DialPlan == nil || len(a.DialPlan.Candidates) == 0 {
+	var candidates []tailcfg.ControlIPCandidate
+	if useDialPlan && a.DialPlan != nil && len(a.DialPlan.Candidates) > 0 {
+		candidates = append(candidates, a.DialPlan.Candidates...)
+	}
+
+	if a.SRVDiscovery {
+		srvCands, err := lookupControlSRV(ctx, a.Hostname, a.logf, nil)
+		if err != nil {
+			a.logf("[v1] controlhttp: SRV lookup for %q failed: %v", a.Hostname, err)
+		} else if len(srvCands) > 0 {
+			candidates = append(candidates, srvCands...)
+		}
+	}
+
+	// If we have no candidates at all, just fall back to dialing the
+	// single host we know about.
+	if len(candidates) == 0 {
 		return a.dialHost(ctx)
 	}
-	candidates := a.DialPlan.Candidates
 
 	// Create a context to be canceled as we return, so once we get a good connection,
 	// we can drop all the other ones.
@@ -128,7 +144,7 @@ func (a *Dialer) dial(ctx context.Context) (*ClientConn, error) {
 
 		ctx, cancel := context.WithTimeout(ctx, time.Duration(cand.DialTimeoutSec*float64(time.Second)))
 		defer cancel()
-		return a.dialHostOpt(ctx, cand.IP, cand.ACEHost)
+		return a.dialHostOpt(ctx, cand.IP, cand.ACEHost, cand.Port)
 	}
 
 	for _, cand := range candidates {
@@ -228,6 +244,7 @@ func (a *Dialer) dialHost(ctx context.Context) (*ClientConn, error) {
 	return a.dialHostOpt(ctx,
 		netip.Addr{}, // no pre-resolved IP
 		"",           // don't use ACE
+		0,            // no port override
 	)
 }
 
@@ -236,7 +253,11 @@ func (a *Dialer) dialHost(ctx context.Context) (*ClientConn, error) {
 //
 // If optAddr is valid, then no DNS is used and the connection will be made to the
 // provided address.
-func (a *Dialer) dialHostOpt(ctx context.Context, optAddr netip.Addr, optACEHost string) (*ClientConn, error) {
+//
+// If optPort is non-zero, it overrides the HTTP and HTTPS port used for the
+// connection attempt (used for SRV-discovered endpoints that listen on
+// non-standard ports).
+func (a *Dialer) dialHostOpt(ctx context.Context, optAddr netip.Addr, optACEHost string, optPort uint16) (*ClientConn, error) {
 	// Create one shared context used by both port 80 and port 443 dials.
 	// If port 80 is still in flight when 443 returns, this deferred cancel
 	// will stop the port 80 dial.
@@ -248,14 +269,25 @@ func (a *Dialer) dialHostOpt(ctx context.Context, optAddr netip.Addr, optACEHost
 	// u80 and u443 are the URLs we'll try to hit over HTTP or HTTPS,
 	// respectively, in order to do the HTTP upgrade to a net.Conn over which
 	// we'll speak Noise.
+	//
+	// If optPort is set (e.g. from an SRV record), it overrides both
+	// HTTP and HTTPS ports since the target server listens on a single
+	// non-standard port.
+	httpPort := strDef(a.HTTPPort, "80")
+	httpsPort := strDef(a.HTTPSPort, "443")
+	if optPort != 0 {
+		portStr := strconv.FormatUint(uint64(optPort), 10)
+		httpPort = portStr
+		httpsPort = portStr
+	}
 	u80 := &url.URL{
 		Scheme: "http",
-		Host:   net.JoinHostPort(a.Hostname, strDef(a.HTTPPort, "80")),
+		Host:   net.JoinHostPort(a.Hostname, httpPort),
 		Path:   serverUpgradePath,
 	}
 	u443 := &url.URL{
 		Scheme: "https",
-		Host:   net.JoinHostPort(a.Hostname, strDef(a.HTTPSPort, "443")),
+		Host:   net.JoinHostPort(a.Hostname, httpsPort),
 		Path:   serverUpgradePath,
 	}
 	if a.HTTPSPort == NoPort || optACEHost != "" {
