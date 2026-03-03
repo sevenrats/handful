@@ -2320,6 +2320,16 @@ var _ControlDialPlanViewNeedsRegeneration = ControlDialPlan(struct {
 	Candidates []ControlIPCandidate
 }{})
 
+// A compilation failure here means this code must be regenerated, with the command at the top of this file.
+var _ControlIPCandidateViewNeedsRegeneration = ControlIPCandidate(struct {
+	IP                netip.Addr
+	ACEHost           string
+	Port              uint16
+	DialStartDelaySec float64
+	DialTimeoutSec    float64
+	Priority          int
+}{})
+
 // View returns a read-only view of Location.
 func (p *Location) View() LocationView {
 	return LocationView{ж: p}

@@ -100,6 +100,7 @@ var _PrefsCloneNeedsRegeneration = Prefs(struct {
 	AutoUpdate                 AutoUpdatePrefs
 	AppConnector               AppConnectorPrefs
 	PostureChecking            bool
+	SRVDiscovery               bool
 	NetfilterKind              string
 	DriveShares                []*drive.Share
 	RelayServerPort            *uint16

@@ -63,6 +63,7 @@ type setArgsT struct {
 	updateCheck                bool
 	updateApply                bool
 	reportPosture              bool
+	srvDiscovery               bool
 	snat                       bool
 	statefulFiltering          bool
 	sync                       bool
@@ -88,6 +89,7 @@ func newSetFlagSet(goos string, setArgs *setArgsT) *flag.FlagSet {
 	setf.BoolVar(&setArgs.updateCheck, "update-check", true, "notify about available Tailscale updates")
 	setf.BoolVar(&setArgs.updateApply, "auto-update", false, "automatically update to the latest available version")
 	setf.BoolVar(&setArgs.reportPosture, "report-posture", false, "allow management plane to gather device posture information")
+	setf.BoolVar(&setArgs.srvDiscovery, "srv-discovery", false, "discover control server endpoints via DNS SRV records")
 	setf.BoolVar(&setArgs.runWebClient, "webclient", false, "expose the web interface for managing this node over Tailscale at port 5252")
 	setf.BoolVar(&setArgs.sync, "sync", false, hidden+"actively sync configuration from the control plane (set to false only for network failure testing)")
 	setf.StringVar(&setArgs.relayServerPort, "relay-server-port", "", "UDP port number (0 will pick a random unused port) for the relay server to bind to, on all interfaces, or empty string to disable relay server functionality")
@@ -164,6 +166,7 @@ func runSet(ctx context.Context, args []string) (retErr error) {
 				Advertise: setArgs.advertiseConnector,
 			},
 			PostureChecking:     setArgs.reportPosture,
+			SRVDiscovery:        setArgs.srvDiscovery,
 			NoStatefulFiltering: opt.NewBool(!setArgs.statefulFiltering),
 		},
 	}

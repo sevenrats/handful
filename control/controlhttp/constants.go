@@ -90,6 +90,12 @@ type Dialer struct {
 	// plan before falling back to DNS.
 	DialPlan *tailcfg.ControlDialPlan
 
+	// SRVDiscovery enables DNS SRV record based discovery of control
+	// server endpoints. When enabled, the client will look up
+	// _ts2021._tcp.<hostname> SRV records to find additional connection
+	// candidates.
+	SRVDiscovery bool
+
 	proxyFunc func(*http.Request) (*url.URL, error) // or nil
 
 	// logPort80Failure is whether we should log about port 80 interceptions

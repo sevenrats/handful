@@ -269,6 +269,12 @@ type Prefs struct {
 	// pref name that doesn't match the public interface)
 	PostureChecking bool
 
+	// SRVDiscovery enables DNS SRV record based discovery of control
+	// server endpoints. When enabled, the client will look up
+	// _ts2021._tcp.<controlhost> SRV records to find additional connection
+	// candidates for the control server.
+	SRVDiscovery bool
+
 	// NetfilterKind specifies what netfilter implementation to use.
 	//
 	// It can be "iptables", "nftables", or "" to auto-detect.
@@ -382,6 +388,7 @@ type MaskedPrefs struct {
 	AutoUpdateSet                 AutoUpdatePrefsMask `json:",omitzero"`
 	AppConnectorSet               bool                `json:",omitempty"`
 	PostureCheckingSet            bool                `json:",omitempty"`
+	SRVDiscoverySet               bool                `json:",omitempty"`
 	NetfilterKindSet              bool                `json:",omitempty"`
 	DriveSharesSet                bool                `json:",omitempty"`
 	RelayServerPortSet            bool                `json:",omitempty"`
@@ -690,6 +697,7 @@ func (p *Prefs) Equals(p2 *Prefs) bool {
 		p.AutoUpdate.Equals(p2.AutoUpdate) &&
 		p.AppConnector == p2.AppConnector &&
 		p.PostureChecking == p2.PostureChecking &&
+		p.SRVDiscovery == p2.SRVDiscovery &&
 		slices.EqualFunc(p.DriveShares, p2.DriveShares, drive.SharesEqual) &&
 		p.NetfilterKind == p2.NetfilterKind &&
 		compareUint16Ptrs(p.RelayServerPort, p2.RelayServerPort) &&

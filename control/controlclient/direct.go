@@ -69,6 +69,7 @@ type Direct struct {
 	dialer                *tsdial.Dialer
 	dnsCache              *dnscache.Resolver
 	controlKnobs          *controlknobs.Knobs // always non-nil
+	srvDiscovery          bool
 	serverURL             string              // URL of the tailcontrol server
 	clock                 tstime.Clock
 	logf                  logger.Logf
@@ -180,6 +181,10 @@ type Options struct {
 	// attempted. It is used to allow the client to clean up any resources or complete any
 	// tasks that are dependent on a live client.
 	Shutdown func()
+
+	// SRVDiscovery enables DNS SRV record based discovery of control
+	// server endpoints.
+	SRVDiscovery bool
 }
 
 // ControlDialPlanner is the interface optionally supplied when creating a
@@ -327,6 +332,7 @@ func NewDirect(opts Options) (*Direct, error) {
 		dialer:                opts.Dialer,
 		dnsCache:              dnsCache,
 		dialPlan:              opts.DialPlan,
+		srvDiscovery:          opts.SRVDiscovery,
 	}
 	c.discoPubKey = opts.DiscoPublicKey
 	c.closedCtx, c.closeCtx = context.WithCancel(context.Background())
@@ -1559,15 +1565,16 @@ func (c *Direct) getNoiseClient() (*ts2021.Client, error) {
 		}
 		c.logf("[v1] creating new noise client")
 		nc, err := ts2021.NewClient(ts2021.ClientOpts{
-			PrivKey:       k,
-			ServerPubKey:  serverNoiseKey,
-			ServerURL:     c.serverURL,
-			Dialer:        c.dialer,
-			DNSCache:      c.dnsCache,
-			Logf:          c.logf,
-			NetMon:        c.netMon,
-			HealthTracker: c.health,
-			DialPlan:      dp,
+			PrivKey:          k,
+			ServerPubKey:     serverNoiseKey,
+			ServerURL:        c.serverURL,
+			Dialer:           c.dialer,
+			DNSCache:         c.dnsCache,
+			Logf:             c.logf,
+			NetMon:           c.netMon,
+			HealthTracker:    c.health,
+			DialPlan:         dp,
+			SRVDiscovery:     c.srvDiscovery,
 		})
 		if err != nil {
 			return nil, err

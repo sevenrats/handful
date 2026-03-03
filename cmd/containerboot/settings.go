@@ -79,6 +79,7 @@ type settings struct {
 	DebugAddrPort         string
 	EgressProxiesCfgPath  string
 	IngressProxiesCfgPath string
+	SRVDiscovery          bool
 	// CertShareMode is set for Kubernetes Pods running cert share mode.
 	// Possible values are empty (containerboot doesn't run any certs
 	// logic),  'ro' (for Pods that shold never attempt to issue/renew
@@ -125,6 +126,7 @@ func configFromEnv() (*settings, error) {
 		EgressProxiesCfgPath:                  defaultEnv("TS_EGRESS_PROXIES_CONFIG_PATH", ""),
 		IngressProxiesCfgPath:                 defaultEnv("TS_INGRESS_PROXIES_CONFIG_PATH", ""),
 		PodUID:                                defaultEnv("POD_UID", ""),
+		SRVDiscovery:                          defaultBool("TS_SRV_DISCOVERY", false),
 	}
 	podIPs, ok := os.LookupEnv("POD_IPS")
 	if ok {
