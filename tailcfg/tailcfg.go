@@ -2299,6 +2299,12 @@ type ControlIPCandidate struct {
 	// argument to CONNECT) is always the control plane's hostname, not an IP.
 	ACEHost string `json:",omitempty"`
 
+	// Port, if non-zero, specifies the port to connect to instead of the
+	// default ports (80/443). This is used when connecting to a control
+	// server discovered via DNS SRV records or when the server is running
+	// on a non-standard port.
+	Port uint16 `json:",omitzero"`
+
 	// DialStartSec is the number of seconds after the beginning of the
 	// connection process to wait before trying this candidate.
 	DialStartDelaySec float64 `json:",omitempty"`

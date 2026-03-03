@@ -78,6 +78,9 @@
 //     the address specified by TS_LOCAL_ADDR_PORT. The health endpoint will return 200
 //     OK if this node has at least one tailnet IP address, otherwise returns 503.
 //     NB: the health criteria might change in the future.
+//   - TS_SRV_DISCOVERY: if true, discover control server endpoints via DNS SRV
+//     records (_ts2021._tcp.<hostname>). This is baked into the Docker image by
+//     default and can be overridden at runtime.
 //   - TS_EXPERIMENTAL_VERSIONED_CONFIG_DIR: if specified, a path to a
 //     directory that containers tailscaled config in file. The config file needs to be
 //     named cap-<current-tailscaled-cap>.hujson. If this is set, TS_HOSTNAME,

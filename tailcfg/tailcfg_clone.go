@@ -591,6 +591,16 @@ var _ControlDialPlanCloneNeedsRegeneration = ControlDialPlan(struct {
 	Candidates []ControlIPCandidate
 }{})
 
+// A compilation failure here means this code must be regenerated, with the command at the top of this file.
+var _ControlIPCandidateCloneNeedsRegeneration = ControlIPCandidate(struct {
+	IP                netip.Addr
+	ACEHost           string
+	Port              uint16
+	DialStartDelaySec float64
+	DialTimeoutSec    float64
+	Priority          int
+}{})
+
 // Clone makes a deep copy of Location.
 // The result aliases no memory with the original.
 func (src *Location) Clone() *Location {

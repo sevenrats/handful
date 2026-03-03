@@ -142,6 +142,9 @@ func tailscaleUp(ctx context.Context, cfg *settings) error {
 	if cfg.Hostname != "" {
 		args = append(args, "--hostname="+cfg.Hostname)
 	}
+	if cfg.SRVDiscovery {
+		args = append(args, "--srv-discovery")
+	}
 	if cfg.ExtraArgs != "" {
 		args = append(args, strings.Fields(cfg.ExtraArgs)...)
 	}
@@ -174,6 +177,9 @@ func tailscaleSet(ctx context.Context, cfg *settings) error {
 	}
 	if cfg.Hostname != "" {
 		args = append(args, "--hostname="+cfg.Hostname)
+	}
+	if cfg.SRVDiscovery {
+		args = append(args, "--srv-discovery")
 	}
 	log.Printf("Running 'tailscale set'")
 	cmd := exec.CommandContext(ctx, "tailscale", args...)

@@ -150,6 +150,12 @@ const (
 	// Key is a string value that specifies an option: "always", "never", "user-decides".
 	// The default is "user-decides" unless otherwise stated.
 	PostureChecking Key = "PostureChecking"
+
+	// SRVDiscovery controls whether DNS SRV record based discovery of
+	// control server endpoints is enabled.
+	// Key is a string value that specifies an option: "always", "never", "user-decides".
+	// The default is "user-decides" unless otherwise stated.
+	SRVDiscovery Key = "SRVDiscovery"
 	// DeviceSerialNumber is the serial number of the device that is running Tailscale.
 	// This is used on Android, iOS and tvOS to allow IT administrators to manually give us a serial number via MDM.
 	// We are unable to programmatically get the serial number on mobile due to sandboxing restrictions.

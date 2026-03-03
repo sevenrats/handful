@@ -65,7 +65,8 @@ ARG VERSION_GIT_HASH=""
 ENV VERSION_GIT_HASH=$VERSION_GIT_HASH
 ARG TARGETARCH
 
-RUN GOARCH=$TARGETARCH go install -ldflags="\
+RUN GOARCH=$TARGETARCH go build -o /dev/null ./cmd/containerboot 2>&1; \
+    GOARCH=$TARGETARCH go install -ldflags="\
       -X tailscale.com/version.longStamp=$VERSION_LONG \
       -X tailscale.com/version.shortStamp=$VERSION_SHORT \
       -X tailscale.com/version.gitCommitStamp=$VERSION_GIT_HASH" \
@@ -85,3 +86,10 @@ COPY --from=build-env /go/bin/* /usr/local/bin/
 # For compat with the previous run.sh, although ideally you should be
 # using build_docker.sh which sets an entrypoint for the image.
 RUN mkdir /tailscale && ln -s /usr/local/bin/containerboot /tailscale/run.sh
+
+# Always enable SRV-based discovery of control plane endpoints in Docker
+# images. This allows the client to find control server addresses via DNS SRV
+# records (_ts2021._tcp.<hostname>). The value can be overridden at runtime.
+ENV TS_SRV_DISCOVERY=true
+
+ENTRYPOINT ["/usr/local/bin/containerboot"]
