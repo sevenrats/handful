@@ -325,6 +325,13 @@ func (a *Dialer) dialHostOpt(ctx context.Context, optAddr netip.Addr, optACEHost
 	}
 
 	forceTLS := a.forceNoise443()
+	// When dialing an SRV-discovered endpoint (indicated by an explicit
+	// optPort), don't force TLS. SRV records point to the exact port the
+	// server is listening on and TLS forcing would cause the handshake to
+	// fail against plain-HTTP control servers (e.g. Headscale).
+	if optPort != 0 {
+		forceTLS = false
+	}
 
 	// Start the plaintext HTTP attempt first, unless disabled by the envknob.
 	if !forceTLS || u443 == nil {

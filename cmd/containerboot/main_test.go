@@ -118,7 +118,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false",
 						},
 						// No metrics or health by default.
@@ -142,7 +142,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key",
 						},
 					},
@@ -161,7 +161,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key",
 						},
 					},
@@ -199,7 +199,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key --advertise-routes=1.2.3.0/24,10.20.30.0/24",
 						},
 					},
@@ -222,7 +222,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key --advertise-routes=",
 						},
 					},
@@ -246,7 +246,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key --advertise-routes=1.2.3.0/24,10.20.30.0/24",
 						},
 					},
@@ -270,7 +270,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key --advertise-routes=::/64,1::/64",
 						},
 					},
@@ -294,7 +294,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key --advertise-routes=::/64,1.2.3.0/24",
 						},
 					},
@@ -318,7 +318,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key",
 						},
 					},
@@ -338,7 +338,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key",
 						},
 						WantFiles: map[string]string{
@@ -363,7 +363,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key",
 						},
 						WantFiles: map[string]string{
@@ -404,7 +404,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 						},
 					},
 					{
@@ -435,7 +435,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 						},
 					},
 					{
@@ -650,7 +650,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking --socks5-server=localhost:1080 --outbound-http-proxy-listen=localhost:8080",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking --socks5-server=localhost:1080 --outbound-http-proxy-listen=localhost:8080",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false",
 						},
 					},
@@ -668,7 +668,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=true",
 						},
 					},
@@ -687,7 +687,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking --experiments=widgets",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking --experiments=widgets",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --widget=rotated",
 						},
 					}, {
@@ -704,7 +704,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --accept-routes",
 						},
 					}, {
@@ -721,7 +721,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=true",
 						},
 					}, {
@@ -739,7 +739,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false",
 						},
 					}, {
@@ -756,7 +756,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --hostname=my-server",
 						},
 					}, {
@@ -773,7 +773,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking --config=/etc/tailscaled/cap-95.hujson",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking --config=/etc/tailscaled/cap-95.hujson",
 						},
 					}, {
 						Notify: runningNotify,
@@ -790,7 +790,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false",
 						},
 						EndpointStatuses: map[string]int{
@@ -812,7 +812,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false",
 						},
 						EndpointStatuses: map[string]int{
@@ -839,7 +839,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false",
 						},
 						EndpointStatuses: map[string]int{
@@ -866,7 +866,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false",
 						},
 						EndpointStatuses: map[string]int{
@@ -892,7 +892,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key",
 						},
 					},
@@ -1018,7 +1018,7 @@ func TestContainerBoot(t *testing.T) {
 				Phases: []phase{
 					{
 						WantCmds: []string{
-							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --state=mem: --statedir=/tmp --tun=userspace-networking",
+							"/usr/bin/tailscaled --socket=/tmp/tailscaled.sock --statedir=/tmp --tun=userspace-networking",
 							"/usr/bin/tailscale --socket=/tmp/tailscaled.sock up --accept-dns=false --authkey=tskey-key",
 						},
 					},

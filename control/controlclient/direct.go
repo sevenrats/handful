@@ -18,6 +18,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"net/url"
 	"os"
 	"reflect"
 	"runtime"
@@ -265,6 +266,12 @@ func NewDirect(opts Options) (*Direct, error) {
 		opts.ControlKnobs = &controlknobs.Knobs{}
 	}
 	opts.ServerURL = strings.TrimRight(opts.ServerURL, "/")
+	// Ensure the server URL has a scheme so that url.Parse and downstream
+	// consumers (loadServerPubKeys, Noise client, SRV fallback) work
+	// correctly. Default to http:// when no scheme is present.
+	if opts.ServerURL != "" && !strings.Contains(opts.ServerURL, "://") {
+		opts.ServerURL = "http://" + opts.ServerURL
+	}
 	if opts.Clock == nil {
 		opts.Clock = tstime.StdClock{}
 	}
@@ -578,6 +585,10 @@ func (c *Direct) doLogin(ctx context.Context, opt loginOpt) (mustRegen bool, new
 	c.logf("doLogin(regen=%v, hasUrl=%v)", regen, opt.URL != "")
 	if serverKey.IsZero() {
 		keys, err := loadServerPubKeys(ctx, c.httpc, c.serverURL)
+		if err != nil && c.srvDiscovery {
+			c.logf("control key fetch failed (%v), trying SRV-based resolution", err)
+			keys, err = c.loadServerPubKeysViaSRV(ctx)
+		}
 		if err != nil && c.interceptedDial != nil && c.interceptedDial.Load() {
 			c.health.SetUnhealthy(macOSScreenTime, nil)
 		} else {
@@ -1389,6 +1400,74 @@ func loadServerPubKeys(ctx context.Context, httpc *http.Client, serverURL string
 	}
 	out.LegacyPublicKey = k
 	return &out, nil
+}
+
+// loadServerPubKeysViaSRV attempts to fetch server public keys by first
+// performing a DNS SRV lookup for _ts2021._tcp.<hostname> to discover the
+// control server's address, then fetching the keys from the resolved endpoint.
+// This allows the initial key fetch to succeed even when the control server
+// hostname has no A/AAAA records and can only be discovered via SRV records.
+func (c *Direct) loadServerPubKeysViaSRV(ctx context.Context) (*tailcfg.OverTLSPublicKeyResponse, error) {
+	u, err := url.Parse(c.serverURL)
+	if err != nil {
+		return nil, fmt.Errorf("parse server URL: %w", err)
+	}
+	hostname := u.Hostname()
+	if hostname == "" {
+		return nil, fmt.Errorf("could not extract hostname from server URL %q", c.serverURL)
+	}
+
+	resolver := &net.Resolver{PreferGo: true}
+
+	lookupCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	c.logf("loadServerPubKeysViaSRV: looking up _ts2021._tcp.%s", hostname)
+	_, srvRecords, err := resolver.LookupSRV(lookupCtx, "ts2021", "tcp", hostname)
+	if err != nil {
+		return nil, fmt.Errorf("SRV lookup for %q: %w", hostname, err)
+	}
+	if len(srvRecords) == 0 {
+		return nil, fmt.Errorf("SRV lookup for %q returned no records", hostname)
+	}
+	c.logf("loadServerPubKeysViaSRV: got %d SRV record(s) for %q", len(srvRecords), hostname)
+
+	var lastErr error
+	for _, srv := range srvRecords {
+		c.logf("loadServerPubKeysViaSRV: SRV target=%s port=%d priority=%d", srv.Target, srv.Port, srv.Priority)
+
+		ips, err := resolver.LookupIPAddr(lookupCtx, srv.Target)
+		if err != nil {
+			c.logf("loadServerPubKeysViaSRV: resolving SRV target %q: %v", srv.Target, err)
+			lastErr = err
+			continue
+		}
+		for _, ip := range ips {
+			addr, ok := netip.AddrFromSlice(ip.IP)
+			if !ok {
+				continue
+			}
+			addr = addr.Unmap()
+
+			// Construct URL with the resolved IP and SRV port, preserving the
+			// original scheme.
+			srvURL := fmt.Sprintf("%s://%s", u.Scheme, net.JoinHostPort(addr.String(), fmt.Sprint(srv.Port)))
+			c.logf("loadServerPubKeysViaSRV: trying key fetch from %s", srvURL)
+
+			keys, err := loadServerPubKeys(ctx, c.httpc, srvURL)
+			if err != nil {
+				c.logf("loadServerPubKeysViaSRV: fetch from %s: %v", srvURL, err)
+				lastErr = err
+				continue
+			}
+			c.logf("loadServerPubKeysViaSRV: got server keys from %s", srvURL)
+			return keys, nil
+		}
+	}
+	if lastErr == nil {
+		lastErr = fmt.Errorf("no reachable SRV targets for %q", hostname)
+	}
+	return nil, fmt.Errorf("SRV-based key fetch for %q: %w", hostname, lastErr)
 }
 
 // DevKnob contains temporary internal-only debug knobs.
